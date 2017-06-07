@@ -4,7 +4,7 @@ package com.zheng.constant;
  * jpush需要的常量
  * Created by zhenglian on 2017/6/4.
  */
-public class JPushConfig {
+public class JpushConfig {
     /**
      * 应用master_secret和app_key需要在jpush官网上登录后创建应用获取
      */

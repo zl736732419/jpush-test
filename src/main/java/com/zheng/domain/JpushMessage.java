@@ -2,9 +2,10 @@ package com.zheng.domain;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
-import com.zheng.exception.JPushMessageException;
+import com.zheng.exception.JpushMessageException;
 import com.zheng.interfaces.Validable;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import java.util.Map;
  * 
  * Created by zhenglian on 2017/6/5.
  */
-public class JPushMessage implements Validable {
+public class JpushMessage implements Validable {
     
     //通知alert=====================================
     /**
@@ -66,21 +67,21 @@ public class JPushMessage implements Validable {
     /**
      * 只能通过Builder构造器生成对象实例，确保alert/msg至少存在其中一项
      */
-    private JPushMessage() {
+    private JpushMessage() {
     }
 
     @Override
     public void valid() throws RuntimeException {
         if(!sendAlert && !sendMsg) {
-            Throwables.propagate(new JPushMessageException());
+            Throwables.propagate(new JpushMessageException());
         }
         
         if(sendAlert && StringUtils.isBlank(alert)) {
-            Throwables.propagate(new JPushMessageException("发送通知时，通知内容不能为空"));
+            Throwables.propagate(new JpushMessageException("发送通知时，通知内容不能为空"));
         }
         
         if(sendMsg && StringUtils.isBlank(msg)) {
-            Throwables.propagate(new JPushMessageException("发送消息时，消息内容不能为空"));
+            Throwables.propagate(new JpushMessageException("发送消息时，消息内容不能为空"));
         }
         
     }
@@ -157,13 +158,25 @@ public class JPushMessage implements Validable {
         this.sendAlert = sendAlert;
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+    
+    public static AlertBuilder newAlertBuilder() {
+        return new AlertBuilder();
+    }
+    
+    public static MsgBuilder newMsgBuilder() {
+        return new MsgBuilder();
+    }
+    
     /**
      * 构造发送alert/msg的jpushmessage对象实例
      */
-    public class Builder {
-        private JPushMessage message;
+    public static class Builder {
+        private JpushMessage message;
         public Builder() {
-            message = new JPushMessage();
+            message = new JpushMessage();
             message.setSendAlert(true);
             message.setSendMsg(true);
         }
@@ -183,6 +196,16 @@ public class JPushMessage implements Validable {
             return this;
         }
 
+        public Builder withIosAlertBadge(Integer alertBadge) {
+            message.setIosAlertBadge(alertBadge);
+            return this;
+        }
+        
+        public Builder withIosAlertSound(String alertSound) {
+            message.setIosAlertSound(alertSound);
+            return this;
+        }
+        
         public Builder withMsg(String msg) {
             message.setMsg(msg);
             return this;
@@ -193,7 +216,7 @@ public class JPushMessage implements Validable {
             return this;
         }
 
-        public JPushMessage build() {
+        public JpushMessage build() {
             return message;
         }
     }
@@ -201,10 +224,10 @@ public class JPushMessage implements Validable {
     /**
      * 构造发送alert的jpushmessage对象实例
      */
-    public class AlertBuilder {
-        private JPushMessage message;
+    public static class AlertBuilder {
+        private JpushMessage message;
         public AlertBuilder() {
-            message = new JPushMessage();
+            message = new JpushMessage();
             message.setSendAlert(true);
             message.setSendMsg(false);
         }
@@ -224,7 +247,17 @@ public class JPushMessage implements Validable {
             return this;
         }
 
-        public JPushMessage build() {
+        public AlertBuilder withIosAlertBadge(Integer alertBadge) {
+            message.setIosAlertBadge(alertBadge);
+            return this;
+        }
+
+        public AlertBuilder withIosAlertSound(String alertSound) {
+            message.setIosAlertSound(alertSound);
+            return this;
+        }
+
+        public JpushMessage build() {
             return message;
         }
     }
@@ -232,10 +265,10 @@ public class JPushMessage implements Validable {
     /**
      * 构造发送msg的jpushmessage对象实例
      */
-    public class MsgBuilder {
-        private JPushMessage message;
+    public static class MsgBuilder {
+        private JpushMessage message;
         public MsgBuilder() {
-            message = new JPushMessage();
+            message = new JpushMessage();
             message.setSendAlert(false);
             message.setSendMsg(true);
         }
@@ -250,8 +283,28 @@ public class JPushMessage implements Validable {
             return this;
         }
 
-        public JPushMessage build() {
+        public JpushMessage build() {
             return message;
         }
+    }
+
+    @Override
+    public String toString() {
+        
+        StringBuilder builder = new StringBuilder();
+        
+        if(this.sendAlert) {
+            String alertStr = new ToStringBuilder(this).append("alert", this.alert)
+                    .append("title", this.alertTitle).append("extras", this.alertExtras).build();
+            builder.append(alertStr);
+        }
+
+        if(this.sendMsg) {
+            String msgStr = new ToStringBuilder(this).append("msg", this.msg)
+                    .append("extras", this.msgExtras).build();
+            builder.append(msgStr);
+        }
+     
+        return builder.toString();
     }
 }

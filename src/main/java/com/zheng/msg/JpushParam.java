@@ -1,11 +1,14 @@
 package com.zheng.msg;
 
 import com.google.common.base.Throwables;
-import com.zheng.domain.JPushMessage;
+import com.zheng.domain.JpushMessage;
 import com.zheng.domain.params.AudienceParam;
 import com.zheng.enums.PlatformEnum;
-import com.zheng.exception.PlatformParamException;
+import com.zheng.exception.JpushAudienceException;
+import com.zheng.exception.JpushMessageException;
+import com.zheng.exception.JpushPlatformParamException;
 import com.zheng.interfaces.Validable;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * 发送消息所需要配置的参数信息
@@ -13,7 +16,7 @@ import com.zheng.interfaces.Validable;
  * 
  * Created by zhenglian on 2017/6/4.
  */
-public class JPushParam implements Validable {
+public class JpushParam implements Validable {
     /**
      * 必须项
      * 推送终端平台
@@ -25,31 +28,39 @@ public class JPushParam implements Validable {
      * 推送的消息实体
      * 封装需要发送的消息内容
      */
-    private JPushMessage message;
+    private JpushMessage message;
 
     /**
-     * 可选项
+     * 必选项
      * 是否需要采用tag或al过滤终端设备
-     * 不需要则设置为null
      */
     private AudienceParam audienceParam;
 
-    public JPushParam(PlatformEnum platformEnum, JPushMessage message,
+    public JpushParam(PlatformEnum platformEnum, JpushMessage message,
                       AudienceParam audienceParam) {
         this.platformEnum = platformEnum;
         this.message = message;
         this.audienceParam = audienceParam;
     }
 
-    public JPushParam(PlatformEnum platformEnum, JPushMessage message) {
+    public JpushParam(PlatformEnum platformEnum, JpushMessage message) {
         this.platformEnum = platformEnum;
         this.message = message;
+        this.audienceParam = new AudienceParam();
     }
 
     @Override
     public void valid() throws RuntimeException {
-        if(null == platformEnum || null == message) {
-            Throwables.propagate(new PlatformParamException());
+        if(null == platformEnum) {
+            Throwables.propagate(new JpushPlatformParamException());
+        }
+        
+        if(null == message) {
+            Throwables.propagate(new JpushMessageException());
+        }
+        
+        if(null == audienceParam) {
+            Throwables.propagate(new JpushAudienceException());
         }
     }
 
@@ -61,11 +72,11 @@ public class JPushParam implements Validable {
         this.platformEnum = platformEnum;
     }
 
-    public JPushMessage getMessage() {
+    public JpushMessage getMessage() {
         return message;
     }
 
-    public void setMessage(JPushMessage message) {
+    public void setMessage(JpushMessage message) {
         this.message = message;
     }
 
@@ -76,5 +87,10 @@ public class JPushParam implements Validable {
     public void setAudienceParam(AudienceParam audienceParam) {
         this.audienceParam = audienceParam;
     }
-    
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this).append("platform:", this.platformEnum)
+                .append("message:", this.message).build();
+    }
 }

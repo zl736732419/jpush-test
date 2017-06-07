@@ -11,7 +11,7 @@ public enum PlatformEnum {
     ANDROID_IOS(4, "android_ios", "android与ios终端"),
     ANDROID_WINPHONE(5, "android_winphone", "android与winphone终端"),
     IOS_WINPHONE(6, "ios_winphone", "ios与winphone终端"),
-    ALL(5, "all", "所有终端设备");
+    ALL(7, "all", "所有终端设备");
     
     private Integer key;
     private String value;

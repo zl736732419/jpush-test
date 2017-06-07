@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * 用于过滤终端设备，是否按照指定的alias, tag进行过滤
+ * 默认是对所有终端发送消息，没有过滤
  * Created by zhenglian on 2017/6/4.
  */
 public class AudienceParam extends AbstractParam<Audience> {
@@ -56,6 +57,19 @@ public class AudienceParam extends AbstractParam<Audience> {
         setCreate(true);
         
         return this;
+    }
+
+    /**
+     * 重写父类默认逻辑，如果不设置终端过滤，则表示对所有终端发送消息
+     * @return
+     */
+    @Override
+    public Audience create() {
+        if(!create) {
+            return Audience.all();
+        }
+        
+        return build();
     }
 
     @Override

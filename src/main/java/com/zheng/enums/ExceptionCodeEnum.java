@@ -13,7 +13,14 @@ public enum ExceptionCodeEnum {
      * JPushParam参数异常
      */
     JPUSH_PARAM_REQUIRED_ERROR("1001", "JpushParam参数必选"),
-    JPUSH_MESSAGE_INVALID_ERROR("1002", "JpushMessage对象不合法，至少需要消息或通知其中一项");
+    /**
+     * JPushMessage对象异常
+     */
+    JPUSH_MESSAGE_INVALID_ERROR("1002", "JpushMessage对象不合法，至少需要消息或通知其中一项"),
+    /**
+     * JpushAudience终端平台异常
+     */
+    JPUSH_AUDIENCE_REQUIRED_ERROR("1003", "JpushAudience对象必选");
 
     private String code;
     private String name;

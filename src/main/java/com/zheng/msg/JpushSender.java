@@ -11,14 +11,14 @@ import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.Notification;
 import com.google.common.base.Throwables;
-import com.zheng.constant.JPushConfig;
-import com.zheng.domain.JPushMessage;
+import com.zheng.constant.JpushConfig;
+import com.zheng.domain.JpushMessage;
 import com.zheng.domain.params.AudienceParam;
 import com.zheng.domain.params.MessageParam;
 import com.zheng.domain.params.NotificationParam;
 import com.zheng.enums.PlatformEnum;
-import com.zheng.exception.JPushParamException;
-import com.zheng.exception.PlatformParamException;
+import com.zheng.exception.JpushParamException;
+import com.zheng.exception.JpushPlatformParamException;
 import com.zheng.util.PlatformUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,17 +27,25 @@ import org.slf4j.LoggerFactory;
  * Jpush推送中心，负责消息发送
  * Created by zhenglian on 2017/6/4.
  */
-public class JPushSender {
+public class JpushSender {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    private JPushSender() {
+    private JpushSender() {
     }
 
+    public static JpushSender getSender() {
+        return Inner.sender;
+    }
+    
+    public static class Inner {
+        public static JpushSender sender = new JpushSender();
+    }
+    
     /**
      * 获取jpush消息发送对象
      * @return
      */
     private JPushClient getJPushClient() {
-        return new JPushClient(JPushConfig.MASTER_SECRET, JPushConfig.APP_KEY, 
+        return new JPushClient(JpushConfig.MASTER_SECRET, JpushConfig.APP_KEY, 
                 null, ClientConfig.getInstance());
     }
 
@@ -46,9 +54,9 @@ public class JPushSender {
      * @param jPushParam
      * @return
      */
-    private PushPayload createPayLoad(JPushParam jPushParam) {
+    private PushPayload createPayLoad(JpushParam jPushParam) {
         if(null == jPushParam) {
-            Throwables.propagate(new JPushParamException());
+            Throwables.propagate(new JpushParamException());
         }
         
         //检查参数是否合法
@@ -64,7 +72,7 @@ public class JPushSender {
         AudienceParam audienceParam = jPushParam.getAudienceParam();
         setAudience(builder, audienceParam);
         
-        JPushMessage jPushMessage = jPushParam.getMessage();
+        JpushMessage jPushMessage = jPushParam.getMessage();
         jPushMessage.valid();
         //设置通知
         setAlert(builder, jPushMessage, platformEnum);
@@ -80,7 +88,7 @@ public class JPushSender {
      * @param builder
      * @param jPushMessage
      */
-    private void setMessage(PushPayload.Builder builder, JPushMessage jPushMessage) {
+    private void setMessage(PushPayload.Builder builder, JpushMessage jPushMessage) {
         if (!jPushMessage.isSendMsg()) {
             return;
         }
@@ -99,7 +107,7 @@ public class JPushSender {
      * @param builder
      * @param jPushMessage
      */
-    private void setAlert(PushPayload.Builder builder, JPushMessage jPushMessage, PlatformEnum platformEnum) {
+    private void setAlert(PushPayload.Builder builder, JpushMessage jPushMessage, PlatformEnum platformEnum) {
         if(!jPushMessage.isSendAlert()) {
             return;
         }
@@ -147,7 +155,7 @@ public class JPushSender {
      */
     private void setPlatform(PushPayload.Builder builder, PlatformEnum platformEnum) {
         if(null == platformEnum) {
-            Throwables.propagate(new PlatformParamException());
+            Throwables.propagate(new JpushPlatformParamException());
         }
         
         Platform platform = PlatformUtil.getPlatform(platformEnum);
@@ -159,7 +167,7 @@ public class JPushSender {
      * @param jPushParam
      * @return
      */
-    private Audience createAudience(JPushParam jPushParam) {
+    private Audience createAudience(JpushParam jPushParam) {
         AudienceParam audienceParam = jPushParam.getAudienceParam();
         Audience audience = null;
         if(null != audienceParam) {
@@ -176,7 +184,7 @@ public class JPushSender {
      * @param jPushParam
      * @return
      */
-    public PushResult sendMessage(JPushParam jPushParam) {
+    public PushResult sendMessage(JpushParam jPushParam) {
         JPushClient client = getJPushClient();
         PushPayload payload = createPayLoad(jPushParam);
         PushResult result = null;

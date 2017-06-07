@@ -42,6 +42,9 @@ public class PlatformUtil {
             case IOS_WINPHONE:
                 platform = Platform.ios_winphone();
                 break;
+            case ALL:
+                platform = Platform.all();
+                break;
             default:
                 platform = null;
         }
