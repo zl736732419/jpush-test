@@ -1,7 +1,7 @@
 JPush框架封装使用指南
 -------------------
 ### 您需要做的
-1. 选用消息接受终端平台，请使用<code>PlatformEnum</code> 枚举给出的几种情况
+1. 选用消息接收端平台，请使用<code>PlatformEnum</code> 枚举给出的几种情况
 2. 构造消息推送对象<code>JpushMessage</code>，其中包括alert,msg(通知和消息)两种类型的消息参数设定，
 该类提供了几种Builder分别用于构造alert,msg或者alert/msg共存的消息
 3. 采用<code>JpushSender</code>进行消息发送
